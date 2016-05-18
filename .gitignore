@@ -1,0 +1,8 @@
+Binaries/
+Intermediate/
+
+# Visual Studio
+.vs/
+*.sln
+*.VC.db
+*.VC.opendb
