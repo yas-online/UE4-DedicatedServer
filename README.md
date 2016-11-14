@@ -7,6 +7,8 @@ This Plugin is designed to eliminate some shortcomings in UE4's Dedicated Server
  * Cursor Movement via arrow-left/right, home(pos1), end
  * AutoCompletion via tab (WIP)
  * CommandHistory via arrow-up/down
+* Autoupdate
+ * See [Autoupdate wiki page](https://github.com/yas-online/UE4-DedicatedServer/wiki/Autoupdate)
 * RCon (WIP)
  * TCP Socket
  * WebSocket

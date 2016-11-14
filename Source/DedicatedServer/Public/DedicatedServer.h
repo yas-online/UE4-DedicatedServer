@@ -18,5 +18,6 @@ class FDedicatedServerModule : public IModuleInterface
 
 		#if WITH_SERVER_CODE
 			TFuture<void>					m_hTick;
+			FDelegateHandle					m_hAutoUpdateTicker;
 		#endif
 };

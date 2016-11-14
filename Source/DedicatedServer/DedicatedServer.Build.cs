@@ -10,7 +10,7 @@ public class DedicatedServer : ModuleRules
 		//PublicIncludePaths.AddRange( new string[] { "DedicatedServer/Public" } );
 		//PrivateIncludePaths.AddRange( new string[] { "DedicatedServer/Private" } );
 
-		PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "InputCore" } );
+		PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HTTP", "Json", "OnlineSubsystem", "OnlineSubsystemSteam" } );
 		PrivateDependencyModuleNames.AddRange( new string[] { "Core" } );
 	}
 }
