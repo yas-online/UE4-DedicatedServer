@@ -90,33 +90,33 @@
 			if( m_hInputHandle != INVALID_HANDLE_VALUE )
 			{
 				unsigned long iEventsRead;
-				INPUT_RECORD hInputEvent[1];
+				INPUT_RECORD hInputEvents[1];
 
 				if( m_hCachedInputEvent.EventType == KEY_EVENT )
 				{
-					hInputEvent[0] = m_hCachedInputEvent;
+					hInputEvents[0] = m_hCachedInputEvent;
 
 					if( m_hCachedInputEvent.Event.KeyEvent.wRepeatCount == 0 ) m_hCachedInputEvent.EventType = -1;
-					else m_hCachedInputEvent.Event.KeyEvent.wRepeatCount--;
+					else --m_hCachedInputEvent.Event.KeyEvent.wRepeatCount;
 				}
-				else if( ::ReadConsoleInput( m_hInputHandle, hInputEvent, 1, &iEventsRead ) && iEventsRead > 0 )
+				else if( ::ReadConsoleInput( m_hInputHandle, hInputEvents, 1, &iEventsRead ) && iEventsRead > 0 )
 				{
 					// ToDo: Alt+Numpad sequence: http://referencesource.microsoft.com/#mscorlib/system/console.cs,1512
 
-					if( !hInputEvent[0].Event.KeyEvent.bKeyDown )
+					if( !hInputEvents[0].Event.KeyEvent.bKeyDown )
 					{
-						if( hInputEvent[0].Event.KeyEvent.wRepeatCount > 1 )
+						if( hInputEvents[0].Event.KeyEvent.wRepeatCount > 1 )
 						{
-							hInputEvent[0].Event.KeyEvent.wRepeatCount--;
-							m_hCachedInputEvent = hInputEvent[0];
+							--hInputEvents[0].Event.KeyEvent.wRepeatCount;
+							m_hCachedInputEvent = hInputEvents[0];
 						}
 					}
 				}
 				else return;// ToDo: fatal error
 
-				if( hInputEvent[0].EventType == KEY_EVENT && hInputEvent[0].Event.KeyEvent.bKeyDown )
+				if( hInputEvents[0].EventType == KEY_EVENT && hInputEvents[0].Event.KeyEvent.bKeyDown )
 				{
-					KEY_EVENT_RECORD hEvent = hInputEvent[0].Event.KeyEvent;
+					KEY_EVENT_RECORD hEvent = hInputEvents[0].Event.KeyEvent;
 
 					if( hEvent.wVirtualKeyCode == VK_RETURN )
 					{
@@ -138,7 +138,7 @@
 						}
 						else
 						{
-							FCString::Sprintf( sOutput, TEXT( "Unkown Command: %s%s" ), *m_sInput, LINE_TERMINATOR );
+							FCString::Sprintf( sOutput, TEXT( "Unknown Command: %s%s" ), *m_sInput, LINE_TERMINATOR );
 							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
 						}
 
@@ -269,15 +269,34 @@
 							::SetConsoleCursorPosition( m_hOutputHandle, hCursorPosition );
 						}
 					}
-					else if( hEvent.uChar.AsciiChar != '\0' )
+					else if( hEvent.uChar.UnicodeChar != '\0' )
 					{
 						FScopeLock hLock( &m_hLock );
 
-						m_sInput.AppendChar( hEvent.uChar.AsciiChar );
+						m_sInput.AppendChar( hEvent.uChar.UnicodeChar );
 
 						RedrawInputLine();
 					}
 				}
+			}
+		}
+
+		void FServerConsole::SendNullInput()
+		{
+			if( m_hInputHandle != INVALID_HANDLE_VALUE )
+			{
+				unsigned long iEventsWritten;
+				INPUT_RECORD hInputEvents[1];
+
+				hInputEvents[0].EventType = KEY_EVENT;
+				hInputEvents[0].Event.KeyEvent.bKeyDown = true;
+				hInputEvents[0].Event.KeyEvent.dwControlKeyState = 0;
+				hInputEvents[0].Event.KeyEvent.uChar.UnicodeChar = '\0';
+				hInputEvents[0].Event.KeyEvent.wRepeatCount = 1;
+				hInputEvents[0].Event.KeyEvent.wVirtualKeyCode = 0;
+				hInputEvents[0].Event.KeyEvent.wVirtualScanCode = 0;
+
+				::WriteConsoleInput( m_hInputHandle, hInputEvents, 1, &iEventsWritten );
 			}
 		}
 
@@ -290,7 +309,7 @@
 			if( hCursorPosition.X == 0 ) return;
 
 			TCHAR sOutput[MAX_SPRINTF] = TEXT( "" );
-			for( int i = 0; i <= hCursorPosition.X; i++ ) sOutput[i] = ' ';
+			for( int i = 0; i <= hCursorPosition.X; ++i ) sOutput[i] = ' ';
 
 			hCursorPosition.X = 0;
 			::SetConsoleCursorPosition( m_hOutputHandle, hCursorPosition );
@@ -337,6 +356,10 @@
 		{
 		}
 
+		void FServerConsole::SendNullInput()
+		{
+		}
+
 		void FServerConsole::ClearInputLine()
 		{
 		}
@@ -346,6 +369,10 @@
 		}
 	#elif PLATFORM_LINUX
 		void FServerConsole::Tick()
+		{
+		}
+
+		void FServerConsole::SendNullInput()
 		{
 		}
 

@@ -4,6 +4,8 @@
 
 #include "ModuleManager.h"
 
+DECLARE_LOG_CATEGORY_EXTERN( LogDedicatedServer, Log, All );
+
 class FDedicatedServerModule : public IModuleInterface
 {
 	public:
@@ -15,9 +17,6 @@ class FDedicatedServerModule : public IModuleInterface
 		bool								m_bShutdown;
 
 		#if WITH_SERVER_CODE
-			bool							m_bUseConsole;
-			TSharedPtr<FServerConsole>		m_pConsole;
-
 			TFuture<void>					m_hTick;
 		#endif
 };

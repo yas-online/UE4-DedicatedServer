@@ -3,34 +3,40 @@
 #include "DedicatedServerPrivatePCH.h"
 #include "DedicatedServer.h"
 
-#define LOCTEXT_NAMESPACE "FDedicatedServerModule"
+DEFINE_LOG_CATEGORY( LogDedicatedServer );
+
+TScopedPointer<FServerConsole> g_pConsole;
 
 void FDedicatedServerModule::StartupModule()
 {
 	#if WITH_SERVER_CODE
 		if( IsRunningDedicatedServer() )
 		{
-			m_bUseConsole = FParse::Param( FCommandLine::Get(), TEXT( "console" ) );
+			bool bUseConsole = FParse::Param( FCommandLine::Get(), TEXT( "console" ) );
 
-			if( m_bUseConsole && !TIsSame<decltype( GLogConsole ), FServerConsole>::Value )
+			if( bUseConsole && !TIsSame<decltype( GLogConsole ), FServerConsole>::Value )
 			{
-				m_pConsole = MakeShareable( new FServerConsole() );
+				g_pConsole = new FServerConsole();
 
-				if( m_pConsole.IsValid() )
+				if( g_pConsole.IsValid() )
 				{
-					m_pConsole->Show( true );
+					g_pConsole->Show( true );
 
 					GLog->RemoveOutputDevice( GLogConsole );
 
-					GLogConsole = m_pConsole.Get();
+					GLogConsole = g_pConsole.GetOwnedPointer();
 
 					GLog->AddOutputDevice( GLogConsole );
-
-					m_hTick = Async<void>( EAsyncExecution::Thread, [this]()
-					{
-						while( !m_bShutdown ) m_pConsole->Tick();
-					} );
 				}
+
+				m_hTick = Async<void>( EAsyncExecution::Thread, [this]() -> void
+				{
+					while( !m_bShutdown )
+					{
+						if( g_pConsole.IsValid() && g_pConsole->IsShown() ) g_pConsole->Tick();
+					}
+
+				} );
 			}
 		}
 	#endif
@@ -41,15 +47,13 @@ void FDedicatedServerModule::ShutdownModule()
 	m_bShutdown = true;
 
 	#if WITH_SERVER_CODE
-		if( m_bUseConsole )
+		if( g_pConsole.IsValid() && m_hTick.IsValid() )
 		{
-			m_hTick.Wait();
+			g_pConsole->SendNullInput();
 
-			m_pConsole.Reset();
+			m_hTick.Wait();
 		}
 	#endif
 }
-
-#undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE( FDedicatedServerModule, DedicatedServer )

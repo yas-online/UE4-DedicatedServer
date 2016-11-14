@@ -7,8 +7,8 @@ public class RCon : ModuleRules
 {
 	public RCon( TargetInfo Target )
 	{
-		PublicIncludePaths.AddRange( new string[] { "RCon/Public" } );
-		PrivateIncludePaths.AddRange( new string[] { "RCon/Private" } );
+		//PublicIncludePaths.AddRange( new string[] { "RCon/Public" } );
+		//PrivateIncludePaths.AddRange( new string[] { "RCon/Private" } );
 
 		PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "InputCore" } );
 		PrivateDependencyModuleNames.AddRange( new string[] {  } );

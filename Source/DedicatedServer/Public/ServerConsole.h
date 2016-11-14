@@ -23,6 +23,7 @@
 			virtual ~FServerConsole();
 
 			void Tick();
+			void SendNullInput();
 
 			void Show( bool bShowWindow ) override;
 			bool IsShown() override;
