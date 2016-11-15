@@ -99,7 +99,9 @@ void DumpHelp()
 	{
 		FScopeLock hLock( &m_hLock );
 
-		//ToDo: Save Cursor Position
+		#if PLATFORM_WINDOWS
+			COORD hCursorPosition = GetCursorPosition();
+		#endif
 
 		ClearInputLine();
 
@@ -107,7 +109,11 @@ void DumpHelp()
 
 		RedrawInputLine();
 
-		// ToDo: Restore CursorPosition
+		#if PLATFORM_WINDOWS
+			hCursorPosition.Y = GetCursorPosition().Y;
+
+			SetCursorPosition( hCursorPosition );
+		#endif
 	}
 
 	void FServerConsole::Serialize( const TCHAR* sData, ELogVerbosity::Type eVerbosity, const class FName& sCategory )
@@ -143,7 +149,7 @@ void DumpHelp()
 						}
 					}
 				}
-				else return;// ToDo: fatal error
+				else UE_LOG( LogServerConsole, Fatal, TEXT( "Failed to read console input" ) );
 
 				if( hInputEvents[0].EventType == KEY_EVENT && hInputEvents[0].Event.KeyEvent.bKeyDown )
 				{
@@ -182,6 +188,7 @@ void DumpHelp()
 							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
 						}
 
+						if( m_sInput.Equals( m_sUserInput ) ) m_sUserInput.Reset();
 						m_sInput.Empty();
 
 						m_pConsole->SetColor( COLOR_NONE );
@@ -221,7 +228,7 @@ void DumpHelp()
 
 						if( m_iCommandHistoryIndex < 0 ) m_iCommandHistoryIndex = 0;
 
-						// ToDo: Save user input if present
+						if( ( m_iCommandHistoryIndex + 1 ) == m_hCommandHistory.Num() && m_sUserInput.Len() == 0 ) m_sUserInput = m_sInput;
 
 						m_sInput = m_hCommandHistory[m_iCommandHistoryIndex];
 
@@ -239,8 +246,8 @@ void DumpHelp()
 
 						if( m_iCommandHistoryIndex == m_hCommandHistory.Num() )
 						{
-							// ToDo: Restore user input if present
-							m_sInput.Empty();
+							if( m_sUserInput.Len() > 0 ) m_sInput = m_sUserInput;
+							else m_sInput.Empty();
 
 							RedrawInputLine();
 						}
@@ -390,6 +397,13 @@ void DumpHelp()
 			}
 
 			return hCursorPosition;
+		}
+
+		bool FServerConsole::SetCursorPosition( COORD hCursorPosition )
+		{
+			if( m_hOutputHandle != INVALID_HANDLE_VALUE ) return !!::SetConsoleCursorPosition( m_hOutputHandle, hCursorPosition );
+
+			return false;
 		}
 	#elif PLATFORM_MAC
 		void FServerConsole::Tick()

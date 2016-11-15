@@ -40,11 +40,13 @@ DECLARE_LOG_CATEGORY_EXTERN( LogServerConsole, Log, All );
 
 			#if PLATFORM_WINDOWS
 				COORD								GetCursorPosition();
+				bool								SetCursorPosition( COORD hCursorPosition );
 			#endif
 
 		private:
 			FOutputDeviceConsolePlatform*			m_pConsole;
 			FString									m_sInput;
+			FString									m_sUserInput;
 			TArray<FString>							m_hCommandHistory;
 			int32									m_iCommandHistoryIndex;
 
