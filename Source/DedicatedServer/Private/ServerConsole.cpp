@@ -2,38 +2,38 @@
 
 #include "DedicatedServerPrivatePCH.h"
 
+DEFINE_LOG_CATEGORY( LogServerConsole );
+
 // Fixme: We need to workaround a silly issue inside the engine where the help commands relies on Slate being present...
 // See: https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/Runtime/Engine/Private/UnrealEngine.cpp#L3151
 void DumpHelp()
 {
 	#if !UE_BUILD_SHIPPING
-		UE_LOG( LogEngine, Display, TEXT( "Console Help:" ) );
-		UE_LOG( LogEngine, Display, TEXT( "=============" ) );
-		UE_LOG( LogEngine, Display, TEXT( " " ) );
-		UE_LOG( LogEngine, Display, TEXT( "A console variable is a engine wide key value pair. The key is a string usually starting with the subsystem prefix followed" ) );
-		UE_LOG( LogEngine, Display, TEXT( "by '.' e.g. r.BloomQuality. The value can be of different tpe (e.g. float, int, string). A console command has no state associated with" ) );
-		UE_LOG( LogEngine, Display, TEXT( "and gets executed immediately." ) );
-		UE_LOG( LogEngine, Display, TEXT( " " ) );
-		UE_LOG( LogEngine, Display, TEXT( "Console variables can be put into ini files (e.g. ConsoleVariables.ini or BaseEngine.ini) with this syntax:" ) );
-		UE_LOG( LogEngine, Display, TEXT( "<Console variable> = <value>" ) );
-		UE_LOG( LogEngine, Display, TEXT( " " ) );
-		UE_LOG( LogEngine, Display, TEXT( "DumpConsoleCommands         Lists all console variables and commands that are registered (Some are not registered)" ) );
-		UE_LOG( LogEngine, Display, TEXT( "<Console variable>          Get the console variable state" ) );
-		UE_LOG( LogEngine, Display, TEXT( "<Console variable> ?        Get the console variable help text" ) );
-		UE_LOG( LogEngine, Display, TEXT( "<Console variable> <value>  Set the console variable value" ) );
-		UE_LOG( LogEngine, Display, TEXT( "<Console command> [Params]  Execute the console command with optional parameters" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "Console Help:" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "=============" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( " " ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "A console variable is a engine wide key value pair. The key is a string usually starting with the subsystem prefix followed" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "by '.' e.g. r.BloomQuality. The value can be of different tpe (e.g. float, int, string). A console command has no state associated with" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "and gets executed immediately." ) );
+		UE_LOG( LogServerConsole, Display, TEXT( " " ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "Console variables can be put into ini files (e.g. ConsoleVariables.ini or BaseEngine.ini) with this syntax:" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "<Console variable> = <value>" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( " " ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "DumpConsoleCommands         Lists all console variables and commands that are registered (Some are not registered)" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "<Console variable>          Get the console variable state" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "<Console variable> ?        Get the console variable help text" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "<Console variable> <value>  Set the console variable value" ) );
+		UE_LOG( LogServerConsole, Display, TEXT( "<Console command> [Params]  Execute the console command with optional parameters" ) );
 
-		UE_LOG( LogEngine, Display, TEXT( " " ) );
+		UE_LOG( LogServerConsole, Display, TEXT( " " ) );
 
 		FString FilePath = FPaths::GameSavedDir() + TEXT( "ConsoleHelp.html" );
 
-		UE_LOG( LogEngine, Display, TEXT( "To browse console variables open this: '%s'" ), *FilePath );
+		UE_LOG( LogServerConsole, Display, TEXT( "To browse console variables open this: '%s'" ), *FilePath );
 
 		ConsoleCommandLibrary_DumpLibraryHTML( GEngine->GetWorld(), *GEngine, FilePath );
 	#endif
 }
-
-#define LOCTEXT_NAMESPACE "FServerConsole"
 
 #if WITH_SERVER_CODE
 	#if PLATFORM_WINDOWS
@@ -427,5 +427,3 @@ void DumpHelp()
 		#error Nope
 	#endif
 #endif
-
-#undef LOCTEXT_NAMESPACE

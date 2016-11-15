@@ -2,6 +2,8 @@
 
 #pragma once
 
+DECLARE_LOG_CATEGORY_EXTERN( LogServerConsole, Log, All );
+
 #if WITH_SERVER_CODE
 	#if PLATFORM_WINDOWS
 		#include "Private/Windows/WindowsPlatformOutputDevicesPrivate.h"
