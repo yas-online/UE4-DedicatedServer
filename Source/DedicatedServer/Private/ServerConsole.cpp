@@ -108,7 +108,7 @@ void DumpConsoleHelp()
 
 		ClearInputLine();
 
-		m_pConsole->Serialize( sData, eVerbosity, sCategory );
+		m_pConsole->Serialize( sData, eVerbosity, sCategory, fTime );
 
 		RedrawInputLine();
 
