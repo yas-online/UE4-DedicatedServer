@@ -18,7 +18,7 @@ FString Str2SemVer( const FString &sVersion )
 	return sVersion;
 }
 
-TScopedPointer<FServerConsole> g_pConsole;
+TUniquePtr<FServerConsole> g_pConsole;
 
 void FDedicatedServerModule::StartupModule()
 {
@@ -29,7 +29,7 @@ void FDedicatedServerModule::StartupModule()
 
 			if( bUseConsole && !TIsSame<decltype( GLogConsole ), FServerConsole>::Value )
 			{
-				g_pConsole = new FServerConsole();
+				g_pConsole = TUniquePtr<FServerConsole>( new FServerConsole() );
 
 				if( g_pConsole.IsValid() )
 				{
@@ -37,7 +37,7 @@ void FDedicatedServerModule::StartupModule()
 
 					GLog->RemoveOutputDevice( GLogConsole );
 
-					GLogConsole = g_pConsole.GetOwnedPointer();
+					GLogConsole = g_pConsole.Get();
 
 					GLog->AddOutputDevice( GLogConsole );
 				}

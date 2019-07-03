@@ -1,6 +1,8 @@
 // Copyright 2004-2016 YaS-Online, Inc. All Rights Reserved.
 
 #include "DedicatedServerPrivatePCH.h"
+#include "Engine/World.h"
+#include "Engine/Console.h"
 
 void DumpConsoleHelp();
 
@@ -45,31 +47,43 @@ void DumpConsoleHelp();
 					ClearInputLine();
 
 					m_pConsole->SetColor( COLOR_GREEN );
-
-					TCHAR sOutput[MAX_SPRINTF] = TEXT( "" );
-					unsigned long iCharsWritten;
-
-					if( m_sInput.StartsWith( TEXT( "help" ) ) )
+					auto &sInput = m_sInput;
+					AsyncTask( ENamedThreads::GameThread, [this, sInput]()
 					{
-						DumpConsoleHelp();
+						// code to execute on game thread here
 
-						FCString::Sprintf( sOutput, TEXT( "> %s%s" ), *m_sInput, LINE_TERMINATOR );
-						::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+						TCHAR sOutput[MAX_SPRINTF] = TEXT( "" );
+						unsigned long iCharsWritten = 0;
 
-						m_hCommandHistory.Add( m_sInput );
-					}
-					else if( GEngine->Exec( GEngine->GetWorld(), *m_sInput ) )
-					{
-						FCString::Sprintf( sOutput, TEXT( "> %s%s" ), *m_sInput, LINE_TERMINATOR );
-						::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+						if( sInput.StartsWith( TEXT( "help" ) ) )
+						{
+							DumpConsoleHelp();
 
-						m_hCommandHistory.Add( m_sInput );
-					}
-					else
-					{
-						FCString::Sprintf( sOutput, TEXT( "Unknown Command: %s%s" ), *m_sInput, LINE_TERMINATOR );
-						::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
-					}
+							FCString::Sprintf( sOutput, TEXT( "> %s%s" ), *sInput, LINE_TERMINATOR );
+							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+
+							m_hCommandHistory.Add( sInput );
+						}
+						else if( GEngine->Exec( GWorld, *sInput ) )
+						{
+							FCString::Sprintf( sOutput, TEXT( "> %s%s" ), *sInput, LINE_TERMINATOR );
+							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+
+							m_hCommandHistory.Add( sInput );
+						}
+						else if ( GWorld->GetAuthGameMode() != nullptr && GWorld->GetAuthGameMode()->ProcessConsoleExec( *sInput, *GLog, nullptr ) )
+						{
+							FCString::Sprintf( sOutput, TEXT("> %s%s"), *sInput, LINE_TERMINATOR );
+							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+
+							m_hCommandHistory.Add( sInput );
+						}
+						else
+						{
+							FCString::Sprintf( sOutput, TEXT( "Unknown Command: %s%s" ), *sInput, LINE_TERMINATOR );
+							::WriteConsole( m_hOutputHandle, sOutput, FCString::Strlen( sOutput ), &iCharsWritten, NULL );
+						}
+					} );
 
 					if( m_sInput.Equals( m_sUserInput ) ) m_sUserInput.Reset();
 					m_sInput.Empty();
@@ -270,7 +284,7 @@ void DumpConsoleHelp();
 
 	COORD FServerConsole::GetCursorPosition()
 	{
-		COORD hCursorPosition;
+		COORD hCursorPosition = 0;
 
 		if( m_hOutputHandle != INVALID_HANDLE_VALUE )
 		{

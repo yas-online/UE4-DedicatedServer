@@ -28,7 +28,7 @@ void DumpConsoleHelp()
 			TEXT( "<Console command> [Params]  Execute the console command with optional parameters" ) TEXT( "\n" )
 		);
 
-		FString FilePath = FPaths::GameSavedDir() + TEXT( "ConsoleHelp.html" );
+		FString FilePath = FPaths::ProjectSavedDir() + TEXT( "ConsoleHelp.html" );
 
 		UE_LOG( LogServerConsole, Display, TEXT( "\n" )
 			TEXT( "To browse console variables open this: '%s'" )

@@ -6,14 +6,15 @@ DECLARE_LOG_CATEGORY_EXTERN( LogServerConsole, Log, All );
 
 #if WITH_SERVER_CODE
 	#if PLATFORM_WINDOWS
-		#include "Private/Windows/WindowsPlatformOutputDevicesPrivate.h"
-		#define FOutputDeviceConsolePlatform FOutputDeviceConsoleWindows
+		#include "Public/Windows/WindowsConsoleOutputDevice.h"
+		#include "Public/Windows/WindowsHWrapper.h"
+		#define FOutputDeviceConsolePlatform FWindowsConsoleOutputDevice	
 	#elif PLATFORM_MAC
-		#include "Private/Mac/MacPlatformOutputDevicesPrivate.h"
-		#define FOutputDeviceConsolePlatform FOutputDeviceConsoleMac
+		#include "Public/Mac/MacConsoleOutputDevice.h"
+		#define FOutputDeviceConsolePlatform FMacConsoleOutputDevice
 	#elif PLATFORM_LINUX
-		#include "Private/Linux/LinuxPlatformOutputDevicesPrivate.h"
-		#define FOutputDeviceConsolePlatform FOutputDeviceConsoleLinux
+		#include "Public/Linux/LinuxConsoleOutputDevice.h"
+		#define FOutputDeviceConsolePlatform FLinuxConsoleOutputDevice
 	#else
 		#error How did you get here?
 	#endif

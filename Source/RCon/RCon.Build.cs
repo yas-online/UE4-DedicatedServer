@@ -5,7 +5,7 @@ using UnrealBuildTool;
 
 public class RCon : ModuleRules
 {
-	public RCon( TargetInfo Target )
+	public RCon( ReadOnlyTargetRules Target ) : base( Target )
 	{
 		//PublicIncludePaths.AddRange( new string[] { "RCon/Public" } );
 		//PrivateIncludePaths.AddRange( new string[] { "RCon/Private" } );
