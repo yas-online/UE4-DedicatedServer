@@ -42,7 +42,7 @@ void FDedicatedServerModule::StartupModule()
 					GLog->AddOutputDevice( GLogConsole );
 				}
 
-				m_hTick = Async<void>( EAsyncExecution::Thread, [this]() -> void
+				m_hTick = Async<>( EAsyncExecution::Thread, [this]() -> void
 				{
 					while( !m_bShutdown )
 					{
