@@ -1,5 +1,6 @@
 // Copyright 2004-2016 YaS-Online, Inc. All Rights Reserved.
 
+#include "DedicatedServer.h"
 #include "DedicatedServerPrivatePCH.h"
 
 DEFINE_LOG_CATEGORY( LogServerConsole );
@@ -40,7 +41,7 @@ void DumpConsoleHelp()
 
 #if WITH_SERVER_CODE
 	#if PLATFORM_WINDOWS
-		#include "AllowWindowsPlatformTypes.h"
+		#include "Windows/AllowWindowsPlatformTypes.h"
 
 		namespace ConsoleConstants
 		{
@@ -50,7 +51,7 @@ void DumpConsoleHelp()
 			uint32 WIN_STD_ERROR_HANDLE = STD_ERROR_HANDLE;
 		}
 
-		#include "HideWindowsPlatformTypes.h"
+		#include "Windows/HideWindowsPlatformTypes.h"
 	#endif
 
 	FServerConsole::FServerConsole()

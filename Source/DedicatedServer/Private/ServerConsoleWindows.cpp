@@ -284,8 +284,7 @@ void DumpConsoleHelp();
 
 	COORD FServerConsole::GetCursorPosition()
 	{
-		COORD hCursorPosition = 0;
-
+		COORD hCursorPosition = {};
 		if( m_hOutputHandle != INVALID_HANDLE_VALUE )
 		{
 			CONSOLE_SCREEN_BUFFER_INFO hConsoleInfo;
